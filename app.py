@@ -103,5 +103,29 @@ def edit(id):
     # If GET then display page
     return render_template('edit.html', post=post)
 
+# Create a route to delete a post
+# Delete page will only be processed with a POST method
+# The post is is the url parameter
+@app.route('/<int:id>/delete', methods=('POST',))
+def delete(id):
+    # Get the post
+    post = get_post(id)
+    
+    # Connect to database
+    conn = get_db_connection()
+    
+    # Execute a delete query
+    conn.execute('DELETE from posts WHERE id = ?', (id,))
+    
+    # Commit and close the connection
+    conn.commit()
+    conn.close()
+    
+    # Flash a success message
+    flash('"{}" was succesfully deleted!'.format(post['title']))
+    
+    # Redirect to the homepage
+    return redirect(url_for('index'))
+
 
 app.run(port=5008)
